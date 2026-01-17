@@ -77,12 +77,15 @@ local function render(bufnr)
 	local win_width = vim.api.nvim_win_get_width(win)
 	local status_width = compute_statuscol_width(win)
 
+	local top_line = vim.fn.line("w0")
+	local bottom_line = vim.fn.line("w$")
+
 	local used = {}
 
 	for _, d in ipairs(diags) do
 		local base_line = d.lnum
 
-		if not used[base_line] then
+		if base_line >= top_line and base_line <= bottom_line and not used[base_line] then
 			used[base_line] = true
 
 			local text = d.message:gsub("\n", " ")
@@ -90,6 +93,10 @@ local function render(bufnr)
 			local remaining = text
 
 			while #remaining > 0 do
+				if vim.fn.foldclosed(current_line) ~= -1 then
+					break
+				end
+
 				-- Line width
 				local line_text = vim.api.nvim_buf_get_lines(bufnr, current_line, current_line + 1, false)[1] or ""
 				local content_width = #line_text
@@ -113,7 +120,11 @@ local function render(bufnr)
 					hl_mode = "combine",
 				})
 
-				current_line = current_line + M.config.padding_right
+
+				current_line = current_line + 1
+				if current_line >= bottom_line  then
+					break
+				end
 			end
 		end
 	end
