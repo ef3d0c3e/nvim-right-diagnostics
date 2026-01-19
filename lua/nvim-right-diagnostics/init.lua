@@ -96,6 +96,13 @@ local function render(bufnr)
 				if vim.fn.foldclosed(current_line) ~= -1 then
 					break
 				end
+				if current_line + 1 >= bottom_line  then
+					break
+				end
+				local line_count = vim.api.nvim_buf_line_count(bufnr)
+				if current_line < 1 or current_line > line_count then
+					break
+				end
 
 				-- Line width
 				local line_text = vim.api.nvim_buf_get_lines(bufnr, current_line, current_line + 1, false)[1] or ""
@@ -122,9 +129,6 @@ local function render(bufnr)
 
 
 				current_line = current_line + 1
-				if current_line >= bottom_line  then
-					break
-				end
 			end
 		end
 	end
