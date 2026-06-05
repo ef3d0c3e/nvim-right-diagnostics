@@ -106,7 +106,7 @@ local function render(bufnr)
 
 				-- Line width
 				local line_text = vim.api.nvim_buf_get_lines(bufnr, current_line, current_line + 1, false)[1] or ""
-				local content_width = #line_text
+				local content_width = vim.fn.strdisplaywidth(line_text)
 
 				local avail = math.floor(
 					(win_width - status_width) * (1 - M.config.spacing_ratio) - content_width - M.config.padding_right
